@@ -8,29 +8,20 @@
 ;;; see <url:http://www.gnu.org/copyleft/lesser.html>
 ;;; for details and the precise copyright document.
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (require :port-ext (translate-logical-pathname "clocc:src;port;ext"))
-  ;; `default-directory'
-  (require :port-path (translate-logical-pathname "port:path"))
-  #+sbcl
-  (require :sb-introspect)
-  #+(and allegro mswindows)
-  (require :ole))
-
-in-package :port)
+(in-package :newport)
 
 #+sbcl (eval-when (:compile-toplevel :load-toplevel :execute)
-         (shadow '(getenv finalize)))
+         (shadow '(getenv)))
 
-(export
- '(getenv finalize variable-special-p variable-not-special arglist
-   compiled-file-p
-   class-slot-list class-slot-initargs
-   structure-slots structure-keyword-constructor structure-boa-constructors
-   structure-copier structure-predicate
-   +month-names+ +week-days+ +time-zones+ tz->string string->tz
-   current-time sysinfo))
-
+(defun default-directory ()
+  "The default directory."
+  #+allegro (excl:current-directory)
+  #+clisp (ext:default-directory)
+  #+cmu (ext:default-directory)
+  #+cormanlisp (ccl:get-current-directory)
+  #+lispworks (hcl:get-working-directory)
+  #+lucid (lcl:working-directory)
+  #-(or allegro clisp cmu cormanlisp lispworks lucid) (truename "."))
 ;;;
 ;;; System
 ;;;
@@ -41,7 +32,7 @@ in-package :port)
   #+clisp (ext:getenv (string var))
   #+(or cmu scl)
   (cdr (assoc (string var) ext:*environment-list* :test #'equalp
-              :key #'string))
+                                                  :key #'string))
   #+gcl (si:getenv (string var))
   #+lispworks (lw:environment-variable (string var))
   #+lucid (lcl:environment-variable (string var))
@@ -56,7 +47,7 @@ in-package :port)
   #+clisp (setf (ext:getenv (string var)) (and val (string val)))
   #+(or cmu scl)
   (let ((cell (assoc (string var) ext:*environment-list* :test #'equalp
-                     :key #'string)))
+                                                         :key #'string)))
     (if cell
         (setf (cdr cell) (and val (string val)))
         (push (cons (intern (string var) "KEYWORD") (and val (string val)))
@@ -67,32 +58,6 @@ in-package :port)
   #+sbcl (sb-posix:setenv (string var) (and val (string val)) 1)
   #-(or allegro clisp cmu gcl lispworks lucid sbcl scl)
   (error 'not-implemented :proc (list '(setf getenv) var)))
-
-(defun finalize (obj func)
-  "When OBJ is GCed, FUNC is called on it."
-  #+allegro (excl:schedule-finalization obj func)
-  #+clisp (ext:finalize obj func)
-  #+(or cmu scl) (ext:finalize obj func)
-  #+cormanlisp (cl::register-finalization obj func)
-  #+sbcl (sb-ext:finalize obj func)
-  #-(or allegro clisp cmu cormanlisp sbcl scl)
-  (error 'not-implemented :proc (list 'finalize obj func)))
-
-(defun compiled-file-p (file-name)
-  "Return T if the FILE-NAME is a filename designator for a valid compiled.
-Signal an error when it is not a filename designator.
-Return NIL when the file does not exist, or is not readable,
-or does not contain valid compiled code."
-  #+clisp
-  (with-open-file (in file-name :direction :input :if-does-not-exist nil)
-    (handler-bind ((error (lambda (c) (declare (ignore c))
-                                  (return-from compiled-file-p nil))))
-      (and in (char= #\( (peek-char nil in nil #\a))
-           (let ((form (read in nil nil)))
-             (and (consp form)
-                  (eq (car form) 'SYSTEM::VERSION)
-                  (null (eval form)))))))
-  #-clisp t)
 
 ;;;
 ;;; Introspection

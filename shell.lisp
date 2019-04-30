@@ -8,10 +8,7 @@
 ;;; See <URL:http://www.gnu.org/copyleft/lesser.html>
 ;;; for details and the precise copyright document.
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (require :port-ext (translate-logical-pathname "clocc:src;port;ext")))
-
-(in-package :port)
+(in-package :newport)
 
 (export '(run-prog pipe-output pipe-input close-pipe with-open-pipe))
 
