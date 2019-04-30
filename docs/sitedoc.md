@@ -1,66 +1,160 @@
 ;;;;;
 title: Newport
-url: newport.html
 format: md
 date: 2019-4-28
+tags: article
 ;;;;;
 
 Revive the portable OS interface library portions of CLOCC's PORT, with
 modern implementations and ASDF.
 
-# Shell access, Pipes
-`run-prog`
-
-`pipe-output`
-
-`pipe-input`
-
-`close-pipe`
-
-`with-open-pipe`
-
-# System functions
-`getenv`
-
-`finalize`
-
-`variable-special-p`
-
-`variable-not-special`
-
-`arglist`
-
-`compiled-file-p`
-
-`class-slot-list`
+[Code is on github!](https://github.com/equwal/Newport)
 
 
+Portable shell and system access. Revive the portable OS interface library
+portions of CLOCC's PORT, with modern implementations and ASDF. Provide better
+documentation than was ever offered at the now bit rotten site. Licensed with
+LGPL (through mandate, since the original was).
 
-`class-slot-initargs`
+# Shell, Pipes, System functions
 
-`structure-slots`
 
-`structure-keyword-constructor`
+`CURRENT-TIME`
 
-`structure-boa-constructors`
+Print the current time to the stream (defaults to t).
 
-`structure-copier`
+`STRING->TZ`
 
-`structure-predicate`
+Find the OBJ (symbol or string) in +TIME-ZONES+.
 
-`+month-names+`
+`TZ->STRING`
 
-`+week-days+`
+Convert the CL timezone (rational [-24;24], multiple of 3600) to a string.
 
-`+time-zones+`
+`+TIME-ZONES+`
 
-`tz->string`
+*The string representations of the time zones.
 
-`string->tz`
+`+WEEK-DAYS+`
 
-`current-time`
+*The names of the days of the week.
 
-`sysinfo`
+`+MONTH-NAMES+`
+
+*The names of the months.
+
+`SYSINFO`
+
+Print the current environment to a stream.
+
+`STRUCTURE-PREDICATE`
+
+Return the structure predicate name.
+
+`STRUCTURE-COPIER`
+
+Return the structure copier name.
+
+`STRUCTURE-BOA-CONSTRUCTORS`
+
+Return the list of structure BOA constructor names.
+
+`STRUCTURE-KEYWORD-CONSTRUCTOR`
+
+Return the structure keyword constructor name.
+
+`STRUCTURE-SLOTS`
+
+Return the list of structure slot names.
+
+`CLASS-SLOT-INITARGS`
+
+Return the list of initargs of a CLASS.
+CLASS can be a symbol, a class object (as returned by `class-of')
+or an instance of a class.
+If the second optional argument ALL is non-NIL (default),
+initargs for all slots are returned, otherwise only the slots with
+:allocation type :instance are returned.
+
+`CLASS-SLOT-LIST`
+
+Return the list of slots of a CLASS.
+CLASS can be a symbol, a class object (as returned by `class-of')
+or an instance of a class.
+If the second optional argument ALL is non-NIL (default),
+all slots are returned, otherwise only the slots with
+:allocation type :instance are returned.
+
+`ARGLIST`
+
+Return the signature of the function.
+
+`VARIABLE-NOT-SPECIAL`
+
+Undo the global special declaration.
+This returns a _new_ symbol with the same name, package,
+fdefinition, and plist as the argument.
+This can be confused by imported symbols.
+Also, (FUNCTION-LAMBDA-EXPRESSION (FDEFINITION NEW))
+will return the OLD (uninterned!) symbol as its 3rd value.
+BEWARE!
+
+`VARIABLE-SPECIAL-P`
+
+Return T if the symbol names a global special variable.
+
+`GETENV`
+
+Set an environment variable.
+
+`GETENV`
+
+Return the value of the environment variable.
+
+`DEFAULT-DIRECTORY`
+
+The default directory.
+
+`WITH-OPEN-PIPE`
+
+Open the pipe, do something, then close it.
+
+`CLOSE-PIPE`
+
+Close the pipe stream.
+
+`PIPE-INPUT`
+
+Return an input stream from which the command output will be read.
+
+`PIPE-OUTPUT`
+
+Return an output stream which will go to the command.
+
+`RUN-PROG`
+
+Common interface to shell. Does not return anything useful.
+
+`NOT-IMPLEMENTED`
+
+Your implementation does not support this functionality.
+
+`CODE`
+
+An error in the user code.
+
+`MK-ARR`
+
+Make array with elements of TYPE, initializing.
+
+`COMPOSE`
+
+
+
+`DEFCONST`
+
+Define a typed constant.
+
 
 # Acknowledgements
 
@@ -74,8 +168,9 @@ usocket (sockets)
 
 [trivial gray streams](https://github.com/trivial-gray-streams/trivial-gray-streams)
 
+trivial garbage
 closer-mop
 
 [cl-fad](https://github.com/edicl/cl-fad) (pathnames)
 
-for obsoleting most of CLOCC PORT. I didn't bother PORT's old equivalents.
+for obsoleting *most* of CLOCC PORT.

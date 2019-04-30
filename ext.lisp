@@ -15,12 +15,16 @@
 
 (defmacro defconst (name type init doc)
   "Define a typed constant."
-  (if (fboundp '#1=alexandria:define-constant)
-      `(#1# ,name ,init :type ,type :documentation ,doc)
-      `(progn ,(if type `(declaim (type ,type ,name)))
-              (defconstant ,name (%reevaluate-constant ',name (the ,type ,initial-value)
-                                                       ,test)
-                ,@(when documentation `(,documentation))))))
+                                        ; (if (fboundp '#1=alexandria:define-constant)
+                                        ;  `(alexandria:define-constant ,name ,init :type ,type :documentation ,doc)
+  `(progn (declaim (type ,type ,name))
+          ;; since constant redefinition must be the same under EQL, there
+          ;; can be no constants other than symbols, numbers and characters
+          ;; see ANSI CL spec 3.1.2.1.1.3 "Constant Variables"
+          (,(if (subtypep type '(or symbol number character)) 'defconstant 'defvar)
+           ,name (the ,type ,init) ,doc))
+                                        ;      )
+  )
 (defmacro compose (&rest functions)
   `(alexandria:compose ,@functions))
 (defmacro mk-arr (type init &optional len)

@@ -1,6 +1,6 @@
 # Newport
 
-Docs: http://spensertruex.com/newport.html
+Docs: http://spensertruex.com/Newport.html
 
 (or view sitedoc.md)
 
