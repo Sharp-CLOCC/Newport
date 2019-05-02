@@ -10,7 +10,7 @@
    :structure-copier :structure-predicate
    :+month-names+ :+week-days+ :+time-zones+ :tz->string :string->tz
    :current-time :sysinfo
-   :run-prog :pipe-output
+   :pipe-output
    :pipe-input :close-pipe
    :with-open-pipe))
 (defpackage #:newport-tests

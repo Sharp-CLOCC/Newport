@@ -1,26 +1,10 @@
 (in-package :newport)
+#+5am (in-suite newport-tests:mandatory)
 
 ;;;
 ;;; Shell interface
 ;;;
 
-(defun run-prog (prog &rest opts &key args (wait t) &allow-other-keys)
-  "Common interface to shell. Does not return anything useful."
-  #+gcl (declare (ignore wait))
-  (setq opts (alexandria:remove-from-plist opts :args :wait))
-  #+allegro (apply #'excl:run-shell-command (apply #'vector prog prog args)
-                   :wait wait opts)
-  #+clisp (apply #'ext:run-program prog :arguments args :wait wait opts)
-  #+cmu (apply #'ext:run-program prog args :wait wait opts)
-  #+gcl (apply #'si:run-process prog args)
-  #+liquid (apply #'lcl:run-program prog args)
-  #+lispworks (apply #'sys::call-system
-                     (format nil "~a~{ '~a'~}~@[ &~]" prog args (not wait))
-                     opts)
-  #+lucid (apply #'lcl:run-program prog :wait wait :arguments args opts)
-  #+sbcl (apply #'sb-ext:run-program prog args :wait wait opts)
-  #-(or allegro clisp cmu gcl liquid lispworks lucid sbcl)
-  (error 'not-implemented :proc (list 'run-prog prog opts)))
 
 (defun pipe-output (prog &rest args)
   "Return an output stream which will go to the command."
@@ -28,13 +12,13 @@
                                     :input :stream :wait nil)
   #+clisp (ext:make-pipe-output-stream (format nil "~a~{ ~a~}" prog args))
   #+cmu (ext:process-input (ext:run-program prog args :input :stream
-                                            :output t :wait nil))
+                                                      :output t :wait nil))
   #+gcl (si::fp-input-stream (apply #'si:run-process prog args))
   #+lispworks (sys::open-pipe (format nil "~a~{ ~a~}" prog args)
                               :direction :output)
   #+lucid (lcl:run-program prog :arguments args :wait nil :output :stream)
   #+sbcl (sb-ext:process-input (sb-ext:run-program prog args :input :stream
-                                                   :output t :wait nil))
+                                                             :output t :wait nil))
   #-(or allegro clisp cmu gcl lispworks lucid sbcl)
   (error 'not-implemented :proc (list 'pipe-output prog args)))
 
@@ -44,13 +28,13 @@
                                     :output :stream :wait nil)
   #+clisp (ext:make-pipe-input-stream (format nil "~a~{ ~a~}" prog args))
   #+cmu (ext:process-output (ext:run-program prog args :output :stream
-                                             :error t :input t :wait nil))
+                                                       :error t :input t :wait nil))
   #+gcl (si::fp-output-stream (apply #'si:run-process prog args))
   #+lispworks (sys::open-pipe (format nil "~a~{ ~a~}" prog args)
                               :direction :input)
   #+lucid (lcl:run-program prog :arguments args :wait nil :input :stream)
   #+sbcl (sb-ext:process-output (sb-ext:run-program prog args :output :stream
-                                                    :error t :input t :wait nil))
+                                                              :error t :input t :wait nil))
   #-(or allegro clisp cmu gcl lispworks lucid sbcl)
   (error 'not-implemented :proc (list 'pipe-input prog args)))
 
@@ -78,9 +62,6 @@
 (defmacro with-open-pipe ((pipe open) &body body)
   "Open the pipe, do something, then close it."
   `(let ((,pipe ,open))
-    (declare (stream ,pipe))
-    (unwind-protect (progn ,@body)
-      (close-pipe ,pipe))))
-
-(provide :port-shell)
-;;; file shell.lisp ends here
+     (declare (stream ,pipe))
+     (unwind-protect (progn ,@body)
+       (close-pipe ,pipe))))

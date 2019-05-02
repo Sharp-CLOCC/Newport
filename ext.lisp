@@ -1,6 +1,6 @@
 (in-package :newport)
-
 #+5am (in-suite newport-tests:mandatory)
+
 
 (defmacro defconst (name type init doc)
   "Define a typed constant."
@@ -46,6 +46,12 @@
   (if len `(make-array ,len :element-type ,type :initial-element ,init)
       `(make-array (length ,init) :element-type ,type
                                   :initial-contents ,init)))
+#+5am (test mk-arr (for-all ((x (gen-integer))
+                             (l (gen-integer :min 1 :max 100)))
+                     (is (equalp (mk-arr 'integer x l)
+                                 (mk-arr 'integer (loop for y from 1 to l
+                                                        collect x)))))
+            (signals type-error (mk-arr 'character 1)))
 (define-condition code (error)
   ((proc :reader code-proc :initarg :proc :initform nil)
    (mesg :type (or null simple-string) :reader code-mesg
@@ -62,4 +68,5 @@
    (args :type list :reader code-args :initform
          (list (lisp-implementation-type) (lisp-implementation-version))))
   (:documentation "Your implementation does not support this functionality."))
-
+#+5am (test conditions (signals code (signal 'code))
+            (signals not-implemented (signal 'not-implemented)))

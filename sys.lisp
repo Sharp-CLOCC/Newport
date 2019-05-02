@@ -1,4 +1,5 @@
 (in-package :newport)
+#+5am (in-suite newport-tests:mandatory)
 
 (defun default-directory ()
   "The default directory."
@@ -78,28 +79,6 @@ BEWARE!"
     (setf (symbol-plist var) (symbol-plist symbol))
     var))
 
-(defun arglist (fn)
-  "Return the signature of the function."
-  #+allegro (excl:arglist fn)
-  #+clisp (sys::arglist fn)
-  #+(or cmu scl)
-  (let ((f (coerce fn 'function)))
-    (typecase f
-      (STANDARD-GENERIC-FUNCTION (pcl:generic-function-lambda-list f))
-      (EVAL:INTERPRETED-FUNCTION (eval:interpreted-function-arglist f))
-      (FUNCTION (values (read-from-string (kernel:%function-arglist f))))))
-  #+cormanlisp (ccl:function-lambda-list
-                (typecase fn (symbol (fdefinition fn)) (t fn)))
-  #+gcl (let ((fn (etypecase fn
-                    (symbol fn)
-                    (function (si:compiled-function-name fn)))))
-          (get fn 'si:debug))
-  #+lispworks (lw:function-lambda-list fn)
-  #+lucid (lcl:arglist fn)
-  #+sbcl (sb-introspect:function-lambda-list fn)
-  #-(or allegro clisp cmu cormanlisp gcl lispworks lucid sbcl scl)
-  (error 'not-implemented :proc (list 'arglist fn)))
-
 #+(and clisp (not mop))
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (when (find-symbol "SLOT-DEFINITION-NAME" "CLOS")
@@ -162,75 +141,75 @@ BEWARE!"
              #+sbcl `(sb-pcl::slot-definition-allocation ,slot)
              #+scl `(clos:slot-definition-allocation ,slot)))
 
-(defun class-slot-list (class &optional (all t))
-  "Return the list of slots of a CLASS.
+  (defun class-slot-list (class &optional (all t))
+    "Return the list of slots of a CLASS.
 CLASS can be a symbol, a class object (as returned by `class-of')
 or an instance of a class.
 If the second optional argument ALL is non-NIL (default),
 all slots are returned, otherwise only the slots with
 :allocation type :instance are returned."
-  (mapcan (if all (compose list slot-name)
-              (lambda (slot)
-                (when (eq (slot-alloc slot) :instance)
-                  (list (slot-name slot)))))
-          (class-slots1 class)))
+    (mapcan (if all (compose list slot-name)
+                (lambda (slot)
+                  (when (eq (slot-alloc slot) :instance)
+                    (list (slot-name slot)))))
+            (class-slots1 class)))
 
-(defun class-slot-initargs (class &optional (all t))
-  "Return the list of initargs of a CLASS.
+  (defun class-slot-initargs (class &optional (all t))
+    "Return the list of initargs of a CLASS.
 CLASS can be a symbol, a class object (as returned by `class-of')
 or an instance of a class.
 If the second optional argument ALL is non-NIL (default),
 initargs for all slots are returned, otherwise only the slots with
 :allocation type :instance are returned."
-  (mapcan (if all (compose list slot-one-initarg)
-              (lambda (slot)
-                (when (eq (slot-alloc slot) :instance)
-                  (list (slot-one-initarg slot)))))
-          (class-slots1 class)))
+    (mapcan (if all (compose list slot-one-initarg)
+                (lambda (slot)
+                  (when (eq (slot-alloc slot) :instance)
+                    (list (slot-one-initarg slot)))))
+            (class-slots1 class)))
 
-(defun structure-slots (struct)
-  "Return the list of structure slot names."
-  #+clisp (mapcar #'clos:slot-definition-name (ext:structure-slots struct))
-  #-clisp (class-slot-list (find-class struct)))
+  (defun structure-slots (struct)
+    "Return the list of structure slot names."
+    #+clisp (mapcar #'clos:slot-definition-name (ext:structure-slots struct))
+    #-clisp (class-slot-list (find-class struct)))
 
-(defun structure-keyword-constructor (struct)
-  "Return the structure keyword constructor name."
-  #+clisp (ext:structure-keyword-constructor struct)
-  #-clisp                       ; LAME!!!
-  (let ((s (concatenate 'string "MAKE-" (symbol-name struct)))
-        (p (symbol-package struct)))
-    (or (find-symbol s p)
-        (error "~S(~S): no symbol ~S in ~S"
-	       'structure-keyword-constructor struct s p))))
+  (defun structure-keyword-constructor (struct)
+    "Return the structure keyword constructor name."
+    #+clisp (ext:structure-keyword-constructor struct)
+    #-clisp                       ; LAME!!!
+    (let ((s (concatenate 'string "MAKE-" (symbol-name struct)))
+          (p (symbol-package struct)))
+      (or (find-symbol s p)
+          (error "~S(~S): no symbol ~S in ~S"
+	         'structure-keyword-constructor struct s p))))
 
-(defun structure-boa-constructors (struct)
-  "Return the list of structure BOA constructor names."
-  (declare (ignorable struct))
-  #+clisp (ext:structure-boa-constructors struct)
-  #-clisp nil)                  ; what else?
+  (defun structure-boa-constructors (struct)
+    "Return the list of structure BOA constructor names."
+    (declare (ignorable struct))
+    #+clisp (ext:structure-boa-constructors struct)
+    #-clisp nil)                  ; what else?
 
-(defun structure-copier (struct)
-  "Return the structure copier name."
-  #+clisp (ext:structure-copier struct)
-  #-clisp                       ; LAME!!!
-  (let ((s (concatenate 'string "COPY-" (symbol-name struct)))
-        (p (symbol-package struct)))
-    (or (find-symbol s p)
-        (error "~S(~S): no symbol ~S in ~S"
-               'structure-copier struct s p))))
+  (defun structure-copier (struct)
+    "Return the structure copier name."
+    #+clisp (ext:structure-copier struct)
+    #-clisp                       ; LAME!!!
+    (let ((s (concatenate 'string "COPY-" (symbol-name struct)))
+          (p (symbol-package struct)))
+      (or (find-symbol s p)
+          (error "~S(~S): no symbol ~S in ~S"
+                 'structure-copier struct s p))))
 
-(defun structure-predicate (struct)
-  "Return the structure predicate name."
-  #+clisp (ext:structure-predicate struct)
-  #-clisp                       ; LAME!!!
-  (let ((s (concatenate 'string (symbol-name struct) "-P"))
-        (p (symbol-package struct)))
-   (or (find-symbol s p)
-       (error "~S(~S): no symbol ~S in ~S"
-              'structure-predicate struct s p))))
+  (defun structure-predicate (struct)
+    "Return the structure predicate name."
+    #+clisp (ext:structure-predicate struct)
+    #-clisp                       ; LAME!!!
+    (let ((s (concatenate 'string (symbol-name struct) "-P"))
+          (p (symbol-package struct)))
+      (or (find-symbol s p)
+          (error "~S(~S): no symbol ~S in ~S"
+                 'structure-predicate struct s p))))
 
 
-) ; macrolet
+  ) ; macrolet
 
 ;;;
 ;;; CMUCL structure hack - make them externalizable
@@ -330,6 +309,12 @@ Long Floats:~25t~3d bits exponent, ~3d bits significand (mantissa)~%"
 Current time:~25t" (/ internal-time-units-per-second) *gensym-counter*)
   (current-time out) (format out "~%~75~~%") (room) (values))
 
+#+5am (test sysinfo (is (< 0 (length (with-output-to-string (s)
+                                       (sysinfo s) s))))
+            (is (search (lisp-implementation-type)
+                        (with-output-to-string (s)
+                          (sysinfo s) s))))
+
 ;;;
 ;;; time & date
 ;;;
@@ -371,6 +356,3 @@ Current time:~25t" (/ internal-time-units-per-second) *gensym-counter*)
     (format out "~4d-~2,'0d-~2,'0d ~a ~2,'0d:~2,'0d:~2,'0d ~a"
             ye mo da (aref +week-days+ dw) ho mi se
             (tz->string tz dst))))
-
-(provide :port-sys)
-;;; file sys.lisp ends here

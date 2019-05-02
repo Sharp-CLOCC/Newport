@@ -1,4 +1,4 @@
-(defsystem :newport
+(defsystem #:newport
   :version "1.0"
   :licence "LGPL"
   :description "Revival of CLOCC PORT's portable shell.lisp and sys.lisp."
@@ -15,7 +15,7 @@ The dead project is available at:
 http://clocc.sourceforge.net/dist/port.html
 
 "
-  :depends-on (:alexandria)
+  :depends-on (#:alexandria #:uiop)
   :components
   ((:file "packages")
    (:file "pre-tests")
@@ -23,4 +23,4 @@ http://clocc.sourceforge.net/dist/port.html
    (:file "shell" :depends-on ("packages" "ext"))
    (:file "sys" :depends-on ("packages" "ext"))
    (:file "tests" :depends-on ("packages" "shell" "sys" "ext")))
-  #+5am :in-order-to #+5am ((test-op (test-op :newport-tests))))
+  #+5am :in-order-to #+5am ((test-op (test-op #:newport-tests))))
