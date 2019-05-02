@@ -1,17 +1,4 @@
-;;; environment & system access
-;;;
-;;; copyright (c) 1999-2008, 2010, 2011 by sam steingold
-;;; this is open-source software.
-;;; gnu lesser general public license (lgpl) is applicable:
-;;; no warranty; you may copy/modify/redistribute under the same
-;;; conditions with the source code.
-;;; see <url:http://www.gnu.org/copyleft/lesser.html>
-;;; for details and the precise copyright document.
-
 (in-package :newport)
-
-#+sbcl (eval-when (:compile-toplevel :load-toplevel :execute)
-         (shadow '(getenv)))
 
 (defun default-directory ()
   "The default directory."

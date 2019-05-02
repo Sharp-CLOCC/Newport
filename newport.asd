@@ -15,12 +15,12 @@ The dead project is available at:
 http://clocc.sourceforge.net/dist/port.html
 
 "
-  :depends-on (:alexandria :cl-fad)
+  :depends-on (:alexandria)
   :components
-  ((:static-file "LICENCE")
-   (:static-file "tests.lisp")
-   (:file "packages")
+  ((:file "packages")
+   (:file "pre-tests")
    (:file "ext" :depends-on ("packages"))
    (:file "shell" :depends-on ("packages" "ext"))
    (:file "sys" :depends-on ("packages" "ext"))
-   (:file "tests" :depends-on ("packages" "shell" "sys" "ext"))))
+   (:file "tests" :depends-on ("packages" "shell" "sys" "ext")))
+  #+5am :in-order-to #+5am ((test-op (test-op :newport-tests))))

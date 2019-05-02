@@ -7,6 +7,14 @@ Docs: http://spensertruex.com/Newport.html
 Portable shell and system access. Revive the portable OS interface library portions of CLOCC's PORT, with
 modern implementations and ASDF.
 
-Provide better documentation than was ever offered at the [now bit rotten site](http://clocc.sourceforge.net/dist/port.html).
+Provide betterf documentation than was offered at the [now bit rotten site](http://clocc.sourceforge.net/dist/port.html).
 
 Licensed with LGPL (through mandate, since the original was).
+
+FiveAM must be installed for testing to work.
+
+Actual tests (not boilerplate framework code/ASDF-test-op code) belong in the
+source where they are testing, with a reader macro #+5am. This way, it is easy
+to write tests on specific systems, as with #+(and 5am sbcl), for example.
+
+FiveAM docs: https://common-lisp.net/project/fiveam/docs/Introduction.html

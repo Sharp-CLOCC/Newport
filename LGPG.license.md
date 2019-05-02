@@ -1,3 +1,17 @@
+### Other licenses
+
+CLOCC PORT:
+Copyright (C) 1999-2008, 2010 by Sam Steingold
+This is open-source software.
+GNU Lesser General Public License (LGPL) is applicable:
+No warranty; you may copy/modify/redistribute under the same
+conditions with the source code.
+See <URL:http://www.gnu.org/copyleft/lesser.html>
+for details and the precise copyright document.
+
+Maintenance circa 2019
+Copyright (C) 2019 Spenser Truex (maintenance). LGPL.
+
 ### GNU LESSER GENERAL PUBLIC LICENSE
 
 Version 3, 29 June 2007

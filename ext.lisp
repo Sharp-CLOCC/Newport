@@ -1,32 +1,46 @@
-;;; Basic extensions: conditions, compositions &c
-;;;
-;;; Copyright (C) 1999-2008, 2010 by Sam Steingold
-;;; This is open-source software.
-;;; GNU Lesser General Public License (LGPL) is applicable:
-;;; No warranty; you may copy/modify/redistribute under the same
-;;; conditions with the source code.
-;;; See <URL:http://www.gnu.org/copyleft/lesser.html>
-;;; for details and the precise copyright document.
-
-;;; Copyright (C) 2019 Spenser Truex (maintenance)
-
-
 (in-package :newport)
+
+#+5am (in-suite newport-tests:mandatory)
 
 (defmacro defconst (name type init doc)
   "Define a typed constant."
-                                        ; (if (fboundp '#1=alexandria:define-constant)
-                                        ;  `(alexandria:define-constant ,name ,init :type ,type :documentation ,doc)
+  ;; Was trying push type checking to alexandria's analogous define-constant.
+  ;; (if (fboundp '#1=alexandria:define-constant)
+  ;;  `(alexandria:define-constant ,name ,init :type ,type :documentation ,doc)
   `(progn (declaim (type ,type ,name))
           ;; since constant redefinition must be the same under EQL, there
           ;; can be no constants other than symbols, numbers and characters
           ;; see ANSI CL spec 3.1.2.1.1.3 "Constant Variables"
           (,(if (subtypep type '(or symbol number character)) 'defconstant 'defvar)
            ,name (the ,type ,init) ,doc))
-                                        ;      )
+  ;; )
   )
-(defmacro compose (&rest functions)
-  `(alexandria:compose ,@functions))
+#+5am (test defconst (signals t
+                       (let ((testing+ (gensym)))
+                         (eval `(defconst ,testing+ integer #\a "broken"))))
+            (is (= 1 (let ((testing+ (gensym)))
+                       (eval `(progn (defconst ,testing+ integer 1 "OK")
+                                     (defconst ,testing+ integer 1 "OK")
+                                     ,testing+)))))
+            (signals t (let ((testing+ (gensym)))
+                         (eval `(defconst ,testing+ integer 1))
+                         (eval `(defconst ,testing+ integer 2)))))
+
+(declaim (inline compose))
+(defun compose (&rest functions)
+  (apply #'alexandria:compose functions))
+
+#+5am (test compose (for-all ((x (gen-integer :max (- most-positive-fixnum 2))))
+                      (is  (= (/ (1+ x) 2)
+                              (funcall (compose #'(lambda (x) (/ x 2)) #'1+)
+                                       x))))
+            (is (equal '(1 2 3 4)
+                       (let ((<-fn1 #'(lambda (x) (cons 1 x)))
+                             (<-fn2 #'(lambda (x) (cons 2 x)))
+                             (<-fn3 #'(lambda (x) (cons 3 x)))
+                             (<-fn4 #'(lambda (x) (cons 4 x))))
+                         (funcall (compose <-fn1 <-fn2 <-fn3 <-fn4) nil)))))
+
 (defmacro mk-arr (type init &optional len)
   "Make array with elements of TYPE, initializing."
   (if len `(make-array ,len :element-type ,type :initial-element ,init)
@@ -48,3 +62,4 @@
    (args :type list :reader code-args :initform
          (list (lisp-implementation-type) (lisp-implementation-version))))
   (:documentation "Your implementation does not support this functionality."))
+

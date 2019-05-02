@@ -1,16 +1,4 @@
-;;; Shell Access
-;;;
-;;; Copyright (C) 1999-2005, 2007, 2010 by Sam Steingold
-;;; This is open-source software.
-;;; GNU Lesser General Public License (LGPL) is applicable:
-;;; No warranty; you may copy/modify/redistribute under the same
-;;; conditions with the source code.
-;;; See <URL:http://www.gnu.org/copyleft/lesser.html>
-;;; for details and the precise copyright document.
-
 (in-package :newport)
-
-(export '(run-prog pipe-output pipe-input close-pipe with-open-pipe))
 
 ;;;
 ;;; Shell interface
