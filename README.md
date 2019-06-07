@@ -4,7 +4,7 @@
 
 [Reference Manual](https://spensertruex.com/newport-reference-manual)
 
-![Logo for Newport](https://spensertruex.com/static/p-identical-to-p-tiny.png)
+![Logo for Newport](/docs/logo.png)
 
 (or view sitedoc.md)
 
