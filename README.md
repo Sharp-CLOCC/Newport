@@ -1,7 +1,8 @@
 # Newport
 
-Docs: http://spensertruex.com/Newport.html
-
+Docs: http://spensertruex.com/Newport
+Reference Manual: https://spensertruex.com/newport-reference-manual
+[! [Newport logo: p identical to p.](https://spensertruex.com/static/p-identical-to-p-tiny.png)
 (or view sitedoc.md)
 
 Portable shell and system access. Revive the portable OS interface library portions of CLOCC's PORT, with
