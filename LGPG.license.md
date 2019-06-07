@@ -9,7 +9,7 @@ conditions with the source code.
 See <URL:http://www.gnu.org/copyleft/lesser.html>
 for details and the precise copyright document.
 
-Maintenance circa 2019
+Maintenance 2019.
 Copyright (C) 2019 Spenser Truex (maintenance). LGPL.
 
 ### GNU LESSER GENERAL PUBLIC LICENSE

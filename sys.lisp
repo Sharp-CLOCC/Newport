@@ -10,6 +10,7 @@
   #+lispworks (hcl:get-working-directory)
   #+lucid (lcl:working-directory)
   #-(or allegro clisp cmu cormanlisp lispworks lucid) (truename "."))
+#+5am (test default-directory (is (< 0 (length (default-directory)))))
 ;;;
 ;;; System
 ;;;
