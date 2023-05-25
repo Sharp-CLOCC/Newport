@@ -1,3 +1,6 @@
+Edit from the future:
+CLOCC doesn't seem to be abandonded, so check it out.
+
 # Newport
 
 [Docs](http://spensertruex.com/Newport)
